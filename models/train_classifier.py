@@ -3,7 +3,6 @@ import sys
 
 def load_data(database_filepath):
 
-
     '''
     Arg: database filepath where the data is stored
 
@@ -21,8 +20,23 @@ def load_data(database_filepath):
 
 
 def tokenize(text):
-    pass
 
+    '''
+
+    Arg:text to be tokenized
+
+    Output: tokens
+
+    '''
+
+    # normalize case and remove punctuation
+    text = re.sub(r"[^a-zA-Z0-9]", " ", text.lower())
+    # tokenize text
+    tokens = word_tokenize(text)
+    # lemmatize and remove stop words
+    tokens = [WordNetLemmatizer().lemmatize(word) for word in tokens if word not in stopwords.words("english")]
+
+    return tokens
 
 def build_model():
     pass
