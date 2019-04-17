@@ -22,11 +22,9 @@ def load_data(database_filepath):
 def tokenize(text):
 
     '''
-
     Arg:text to be tokenized
 
     Output: tokens
-
     '''
 
     # normalize case and remove punctuation
@@ -39,11 +37,33 @@ def tokenize(text):
     return tokens
 
 def build_model():
-    pass
+
+    """
+    build a model pipeline
+
+    """
+    pipeline = Pipeline([
+        ('vect', CountVectorizer(tokenizer=tokenize)),
+        ('tfidf', TfidfTransformer()),
+        ('clf', MultiOutputClassifier(RandomForestClassifier()))
+        ])
+
+    return pipeline
 
 
-def evaluate_model(model, X_test, Y_test, category_names):
-    pass
+
+def evaluate_model(model, X_test, y_test, category_names):
+
+    """
+    print a summary test score (F1, recall and precision ) for the 36 categories
+
+    arg: model already fitted, X_test, y_test, and category_names
+
+    """
+
+    # output model test results
+    y_pred=model.predict(X_test)
+    print(classification_report(y_test, y_pred,target_names=category_names))
 
 
 def save_model(model, model_filepath):
