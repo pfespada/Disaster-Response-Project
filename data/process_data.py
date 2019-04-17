@@ -1,5 +1,7 @@
 import sys
-
+import numpy as np
+import pandas as pd
+from sqlalchemy import create_engine
 
 def load_data(messages_filepath, categories_filepath):
 
@@ -22,11 +24,66 @@ def load_data(messages_filepath, categories_filepath):
     return df
 
 def clean_data(df):
-    pass
+
+    """
+    it cleans the data frame to be saved and used for ML modeling
+    Args:
+        df: df to be cleaned
+
+    Returns:
+        df: cleaned dataframe
+    """
+
+
+    #create a dataframe with 36 categories
+    categories = df.categories.str.split(pat=';',expand=True)
+
+    #select the first row of the categories dataframe
+    #and extract the column names
+    row = categories.loc[0]
+    category_colnames = list(row.apply(lambda x :x[:-2]))
+
+    # rename the columns of `categories`
+    categories.columns = category_colnames
+
+    for column in categories:
+        # set each value to be the last character of the string
+        categories[column] =categories[column].str[-1:]
+
+        # convert column from string to numeric
+        categories[column] = pd.to_numeric(categories[column])
+        #make sure there is onle 1 or 0
+        categories[column] = categories[column].replace(2, 1)
+
+    # drop the original categories column from `df`
+    df.drop(['categories'], axis=1, inplace=True)
+
+    # concatenate the original dataframe with the new `categories` dataframe
+    df = pd.concat([df, categories], axis=1)
+
+    # drop duplicates
+    df.drop_duplicates(inplace=True)
+
+    return df
 
 
 def save_data(df, database_filename):
-    pass
+
+    """
+    it saves the data frame in the crated SQLite database
+    Args:
+        df: df to be save
+        database_filename: name of the database
+
+    """
+
+
+    # load to database
+
+    engine = create_engine('sqlite:///'+ database_filename)
+    df.to_sql('clean_data', engine,if_exists="replace" ,index=False)
+
+
 
 
 def main():
