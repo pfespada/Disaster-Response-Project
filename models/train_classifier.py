@@ -89,7 +89,8 @@ def evaluate_model(model, X_test, y_test, category_names):
 
 
 def save_model(model, model_filepath):
-    pass
+
+    pickle.dump(model, open(model_filepath, 'wb'))
 
 
 def main():
