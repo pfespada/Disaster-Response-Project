@@ -32,7 +32,8 @@ def load_data(database_filepath):
     '''
     # define features and label arrays and load the data from the database
 
-    df = pd.read_sql_table('InsertTableName',con=engine,)
+    engine = create_engine('sqlite:///' + database_filepath)
+    df = pd.read_sql_table('clean_data',con=engine)
     X = df['message'].values
     y = df.drop(['original','message','id','genre'], axis=1).values
     target_names = list(df.drop(['original','message','id','genre'],axis=1))
