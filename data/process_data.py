@@ -2,15 +2,31 @@ import sys
 
 
 def load_data(messages_filepath, categories_filepath):
-    pass
 
+    """
+    load the messages and categories files and merge both on 'id'
+    Args:
+        messages_filepath: Filepath to the messages dataset
+        categories_filepath: Filepath to the categories dataset
+    Returns:
+        df: Merged Pandas dataframe
+    """
+
+    # read in file
+    messages = pd.read_csv(messages_filepath)
+    categories = pd.read_csv(categories_filepath)
+
+    #merge messages with categories
+    df =  messages.merge(categories, on='id')
+
+    return df
 
 def clean_data(df):
     pass
 
 
 def save_data(df, database_filename):
-    pass  
+    pass
 
 
 def main():
@@ -24,12 +40,12 @@ def main():
 
         print('Cleaning data...')
         df = clean_data(df)
-        
+
         print('Saving data...\n    DATABASE: {}'.format(database_filepath))
         save_data(df, database_filepath)
-        
+
         print('Cleaned data saved to database!')
-    
+
     else:
         print('Please provide the filepaths of the messages and categories '\
               'datasets as the first and second argument respectively, as '\
