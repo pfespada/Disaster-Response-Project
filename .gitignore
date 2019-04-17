@@ -1,1 +1,4 @@
 .DS_Store
+data/DisasterResponse.db
+models/DisasterResponse.db
+models/classifier.pkl
