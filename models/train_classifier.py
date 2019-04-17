@@ -2,7 +2,22 @@ import sys
 
 
 def load_data(database_filepath):
-    pass
+
+
+    '''
+    Arg: database filepath where the data is stored
+
+    Output: features, labels and categories names
+
+    '''
+    # define features and label arrays and load the data from the database
+
+    df = pd.read_sql_table('InsertTableName',con=engine,)
+    X = df['message'].values
+    y = df.drop(['original','message','id','genre'], axis=1).values
+    target_names = list(df.drop(['original','message','id','genre'],axis=1))
+
+    return X, y, target_names
 
 
 def tokenize(text):
@@ -27,13 +42,13 @@ def main():
         print('Loading data...\n    DATABASE: {}'.format(database_filepath))
         X, Y, category_names = load_data(database_filepath)
         X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2)
-        
+
         print('Building model...')
         model = build_model()
-        
+
         print('Training model...')
         model.fit(X_train, Y_train)
-        
+
         print('Evaluating model...')
         evaluate_model(model, X_test, Y_test, category_names)
 
