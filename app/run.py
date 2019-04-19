@@ -1,9 +1,16 @@
 import json
 import plotly
 import pandas as pd
+import numpy as np
+
+import nltk
+nltk.download('punkt')
+nltk.download('stopwords')
+nltk.download('wordnet')
 
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
 
 from flask import Flask
 from flask import render_template, request, jsonify
@@ -42,6 +49,21 @@ def index():
     # TODO: Below is an example - modify to extract data for your own visuals
     genre_counts = df.groupby('genre').count()['message']
     genre_names = list(genre_counts.index)
+    print(genre_names)
+
+    #data for the third bar chart
+    df_new= df.drop(columns=['id','message','original','genre'])
+    type_names = df_new.sum().sort_values(ascending=False).index
+    type_counts = df_new.sum().sort_values(ascending=False).values
+
+
+    #data for the third bar chart
+    word_serie= pd.Series(np.concatenate([x.split() for x in df['message']])).str.lower()
+    word_serie=word_serie[~word_serie.isin(stopwords.words("english"))].value_counts()
+
+    word_count= word_serie.sort_values(ascending=False)[:9]
+    word_name = word_serie.sort_values(ascending=False)[:9].index
+
 
     # create visuals
     # TODO: Below is an example - modify to create your own visuals
@@ -50,7 +72,10 @@ def index():
             'data': [
                 Bar(
                     x=genre_names,
-                    y=genre_counts
+                    y=genre_counts,
+                    marker ={
+                        'color':'rgba(50, 171, 96, 0.6)'
+                    }
                 )
             ],
 
@@ -61,6 +86,59 @@ def index():
                 },
                 'xaxis': {
                     'title': "Genre"
+                }
+            }
+        },
+
+        {
+            'data': [
+                Bar(
+                    x=type_counts,
+                    y=type_names,
+                    orientation="h",
+                    marker ={
+                        'color':'rgba(50, 171, 96, 0.6)'
+                    }
+                )
+            ],
+
+            'layout': {
+                'title': 'Distribution of categories',
+                'yaxis': {
+                    'title': ""
+                },
+                'xaxis': {
+                    'title': "Frecuency of categories"
+                },
+                'margin': {
+                            'l':200,
+                            'r':20,
+                            't':70,
+                            'b':70,
+
+                },
+            }
+        },
+
+        {
+            'data': [
+                Bar(
+                    x=word_name,
+                    y=word_count,
+                    marker ={
+                        'color':'rgba(50, 171, 96, 0.6)'
+                    }
+
+                )
+            ],
+
+            'layout': {
+                'title': 'TOP 9 Words Distribution',
+                'yaxis': {
+                    'title': "Counts"
+                },
+                'xaxis': {
+                    'title': "Frecuency of words"
                 }
             }
         }
