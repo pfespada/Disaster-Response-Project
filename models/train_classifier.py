@@ -70,7 +70,14 @@ def build_model():
         ('clf', MultiOutputClassifier(RandomForestClassifier()))
         ])
 
-    return pipeline
+    parameters = {
+            'vect__ngram_range': ((1, 1), (1, 2)),
+            'clf__estimator__min_samples_split': [2, 4],
+            'tfidf__norm': ['l1', 'l2']
+            }
+
+    cv = GridSearchCV(pipeline, param_grid=parameters, verbose=2, n_jobs=-1)
+    return cv
 
 
 
